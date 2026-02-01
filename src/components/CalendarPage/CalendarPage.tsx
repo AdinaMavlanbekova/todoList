@@ -3,12 +3,14 @@ import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import { TodoDay } from '../TodoDay/TodoDay'
 import styles from './CalendarPage.module.scss'
+import { AllTasksList } from '../AllTasksList/AllTasksList'
+import { formatLocalDay } from '../../utils/helpers/formatLocalDay'
 
 
 export const CalendarPage:FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
 
-  const day = useMemo(() => selectedDate.toISOString().split('T')[0], [selectedDate])
+  const day = useMemo(() => formatLocalDay(selectedDate), [selectedDate])
   
 
   return(
@@ -17,15 +19,18 @@ export const CalendarPage:FC = () => {
         <h1>Календарь задач</h1>
         <Calendar 
           value={selectedDate}
-          onChange={(v) => {
-            const d = Array.isArray(v) ? v[0] : v
-            if (d) setSelectedDate(d)
+          onClickDay={(d) => {
+            setSelectedDate(new Date(d.getFullYear(), d.getMonth(), d.getDate()))
           }}
-          onClickDay={(d) => setSelectedDate(d)}
         />
       </div>
-      <div>
-        <TodoDay day={day} />
+      <div className={styles.right}>
+        <div className={styles.col}>
+          <TodoDay key={day} day={day} />
+        </div>
+        <div className={styles.col}>
+          <AllTasksList />
+        </div>
       </div>
     </div>
   )

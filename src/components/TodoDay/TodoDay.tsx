@@ -1,8 +1,7 @@
-import { useParams } from 'react-router-dom'
 import { FC, useState } from 'react'
 import { useReminder } from '../../utils/hook/useReminder'
 import { useLocalStorage } from '../../utils/hook/useLocalStorage';
-import { Prop } from 'vue';
+import styles from './TodoDay.module.scss'
 
 
 type Task = {
@@ -17,8 +16,6 @@ type Props = {
 }
 
 export const TodoDay:FC<Props> = ({ day }) => {
-  // const { date } = useParams<{ date: string }>()
-  // const day = date ?? new Date().toISOString().split('T')[0]
 
   const storageKey = `tasks:${day}`
   const [tasks, setTasks] = useLocalStorage<Task[]>(storageKey, [])
@@ -68,7 +65,7 @@ export const TodoDay:FC<Props> = ({ day }) => {
       </div>
       <ul>
         {tasks.map((task) => (
-          <li key={task.id}>
+          <li key={task.id} className={styles.card}>
             <input 
               type="checkbox" 
               checked={task.done}

@@ -1,5 +1,16 @@
 .container {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 24px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin: 100px auto;
+}
+
+.right {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.col {
+  width: 380px; 
 }

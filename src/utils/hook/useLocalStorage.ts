@@ -1,36 +1,40 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState, useRef } from "react"
 
-export function useLocalStorage<T>(key: string, initialValue: T) {
-  const [ value,setValue ] = useState<T>(() => {
+
+
+export const useLocalStorage = <T,>(key: string, initialValue: T) => {
+  const skipWriteRef = useRef(false)
+
+  const readValue = (): T => {
     try {
-      const raw = localStorage.getItem(key)
-      return raw ? (JSON.parse(raw) as T) : initialValue
+      const item = localStorage.getItem(key)
+      return item ? (JSON.parse(item) as T) : initialValue
     } catch {
       return initialValue
     }
-  })
+  }
 
-  const first = useRef(true)
+  const [ storedValue, setStoredValue ] = useState<T>(() => readValue())
 
   useEffect(() => {
-    if (first.current) {
-      first.current = false
+    skipWriteRef.current = true
+    setStoredValue(readValue())
+  }, [key])
+
+  useEffect(() => {
+    if (skipWriteRef.current) {
+      skipWriteRef.current = false
       return
     }
-    try {
-      localStorage.setItem(key, JSON.stringify(value))
-    }catch {
 
-    }
-  }, [key, value])
-
-  useEffect(() => {
     try {
-      const raw = localStorage.getItem(key)
-      setValue(raw ? (JSON.parse(raw) as T): initialValue)
+      localStorage.setItem(key, JSON.stringify(storedValue))
+
+      window.dispatchEvent(new CustomEvent('tasks-updated', {detail: {key}}))
     } catch {
-      setValue(initialValue)
+      //ignore
     }
-  }, [key])
-  return [value, setValue] as const
+  }, [key, storedValue])
+
+  return [storedValue, setStoredValue] as const
 }
